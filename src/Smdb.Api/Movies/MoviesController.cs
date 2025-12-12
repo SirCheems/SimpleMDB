@@ -91,7 +91,7 @@ public class MoviesController
       HttpListenerResponse res, Hashtable props, Func<Task> next)
     {
         // Obtiene el parámetro 'id' desde la URL
-        var uParams = (NameValueCollection)props["req,params"]!;
+        var uParams = (NameValueCollection)props["req.params"]!;
         int id = int.TryParse(uParams["id"]!, out int i) ? i : -1;
 
         // Obtiene el cuerpo de la request como texto
