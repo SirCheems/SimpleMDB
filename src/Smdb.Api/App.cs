@@ -7,26 +7,34 @@ using Smdb.Core.Db;
 
 public class App : HttpServer
 {
+    // Este método se llama al inicializar el servidor y configura todos los routers y servicios
     public override void Init()
     {
-        var db = new MemoryDatabase();
-        var movieRepo = new MemoryMovieRepository(db);
-        var movieServ = new DefaultMovieService(movieRepo);
-        var movieCtrl = new MoviesController(movieServ);
-        var movieRouter = new MoviesRouter(movieCtrl);
-        var apiRouter = new HttpRouter();
+        // ---------------------------
+        // Configuración del Core
+        // ---------------------------
+        var db = new MemoryDatabase(); // Base de datos en memoria
+        var movieRepo = new MemoryMovieRepository(db); // Repositorio de películas usando la DB en memoria
+        var movieServ = new DefaultMovieService(movieRepo); // Service layer que maneja la lógica de películas
+        var movieCtrl = new MoviesController(movieServ); // Controller que expone métodos de CRUD
+        var movieRouter = new MoviesRouter(movieCtrl); // Router que define endpoints HTTP
+        var apiRouter = new HttpRouter(); // Router base para la API
 
-        router.Use(HttpUtils.StructuredLogging);
-        router.Use(HttpUtils.CentralizedErrorHandling);
-        router.Use(HttpUtils.AddResponseCorsHeaders);
-        router.Use(HttpUtils.DefaultResponse);
-        router.Use(HttpUtils.ParseRequestUrl);
-        router.Use(HttpUtils.ParseRequestQueryString);
-        router.UseParametrizedRouteMatching();
+        // ---------------------------
+        // Middlewares globales
+        // ---------------------------
+        router.Use(HttpUtils.StructuredLogging); // Loguea cada request con información estructurada
+        router.Use(HttpUtils.CentralizedErrorHandling); // Manejo centralizado de errores
+        router.Use(HttpUtils.AddResponseCorsHeaders); // Agrega headers CORS a las respuestas
+        router.Use(HttpUtils.DefaultResponse); // Envía 404 si ninguna ruta fue atendida
+        router.Use(HttpUtils.ParseRequestUrl); // Parsea la URL de la request y guarda info en props
+        router.Use(HttpUtils.ParseRequestQueryString); // Parsea query strings y guarda info en props
+        router.UseParametrizedRouteMatching(); // Habilita rutas con parámetros (/:id)
 
-        router.UseRouter("/api/v1", apiRouter);
-        apiRouter.UseRouter("/movies", movieRouter);
+        // ---------------------------
+        // Montaje de routers
+        // ---------------------------
+        router.UseRouter("/api/v1", apiRouter); // Monta el router principal de la API en /api/v1
+        apiRouter.UseRouter("/movies", movieRouter); // Monta el router de películas en /api/v1/movies
     }
-
-
 }

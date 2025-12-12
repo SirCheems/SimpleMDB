@@ -2,21 +2,27 @@ namespace Smdb.Core.Db;
 
 using Smdb.Core.Movies;
 
+// Base de datos en memoria para almacenar películas
 public class MemoryDatabase
 {
+    // Lista de todas las películas
     public List<Movie> Movies { get; }
 
+     // ID siguiente para asignar a una película nueva
     private int nextMovieId;
 
     public MemoryDatabase()
     {
         Movies = [];
-
+        
+        // Inicializa la lista con películas predefinidas
         SeedMovies();
 
+        // Ajusta el siguiente ID basado en la cantidad de películas
         nextMovieId = Movies.Count;
     }
 
+    // Llena la base de datos con películas de ejemplo
     private void SeedMovies()
     {
         Movies.AddRange(new Movie[]
